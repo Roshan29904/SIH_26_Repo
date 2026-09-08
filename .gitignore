@@ -1,11 +1,5 @@
-.venv/
+.env
 __pycache__/
 *.pyc
-.env
-.env.*
-models/
-*.gguf
-*.bin
-*.safetensors
-.vscode/
-.idea/
+.venv/
+venv/
