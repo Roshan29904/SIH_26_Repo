@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 from langchain_ollama import ChatOllama
 
 
-BASE_DIR = Path(__file__).resolve().parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 PROMPT_PATH = BASE_DIR / "prompts" / "query_analyzer.txt"
 
 
