@@ -5,6 +5,7 @@ import FormField from "../components/FormField";
 import { signup } from "../services/api";
 import { useAuthFlow } from "../context/AuthFlowContext";
 import { useUser } from "../context/UserContext";
+import { FcGoogle } from "react-icons/fc";
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -79,7 +80,7 @@ export default function Signup() {
         <div className="auth-form__divider">
           <span>Signup with</span>
           <button type="button" className="google-btn" onClick={handleGoogleSignup}>
-            Google
+           <GoogleIcon /> Google
           </button>
         </div>
 
@@ -95,4 +96,7 @@ export default function Signup() {
       </form>
     </AuthCard>
   );
+}
+function GoogleIcon(){
+  return <FcGoogle size={16} />
 }
