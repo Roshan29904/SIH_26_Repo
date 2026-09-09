@@ -21,11 +21,11 @@ export default function App() {
           <Route
             path="/chat"
             element={
-              <RequireAuth>
+              //<RequireAuth>
                 <ChatProvider>    //chat interface 
                   <Chat />
                 </ChatProvider>
-              </RequireAuth>
+              //</RequireAuth>
             }
           />
         </Routes>
