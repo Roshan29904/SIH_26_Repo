@@ -3,7 +3,7 @@ from typing import TypedDict
 from query_analysis.query_analyzer import QueryAnalysis, analyze_query
 from model_routing.model_router import route_model
 from model_routing.model_config import MODEL_CONFIG
-from model_routing.model_manager import get_model
+from agents.agent import build_agent
 
 from langgraph.graph import StateGraph
 
@@ -39,12 +39,21 @@ def routing_node(state: AgentState):
 
 def model_node(state: AgentState):
 
-    llm = get_model(state["model_name"])
+    agent = build_agent(state["model_name"])
 
-    response = llm.invoke(state["query"])
+    result = agent.invoke({
+        "messages": [
+            {
+                "role": "user",
+                "content": state["query"]
+            }
+        ]
+    })
+
+    response = result["messages"][-1].content
 
     return {
-        "response": response.content
+        "response": response
     }
 
 

@@ -1,0 +1,1 @@
+Sumpner’s test is a test performed on two identical transformers to determine their efficiency, voltage regulation, losses, and temperature rise under full-load conditions, without actually connecting a large external load. It is also called the Back-to-Back Test or Regenerative Test.
