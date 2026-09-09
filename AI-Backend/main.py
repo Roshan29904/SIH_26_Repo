@@ -1,9 +1,8 @@
-from query_analysis.query_analyzer import analyze_query
-from model_routing.model_router import route_model
-from model_routing.model_config import MODEL_CONFIG
-from model_routing.model_manager import get_model
+from orchestration.orchestrator import build_graph
+
 
 def get_user_query():
+
     query = input("Enter your task: ")
 
     return {
@@ -18,30 +17,17 @@ if __name__ == "__main__":
     print("\nReceived Task:")
     print(task["query"])
 
-    print("\nAnalyzing task...")
+    graph = build_graph()
 
-    analysis = analyze_query(task["query"])
+    result = graph.invoke({
+        "query": task["query"]
+    })
 
-    print("\nQuery Analysis:")
-    print(analysis)
+    print("\nModel Role:")
+    print(result["model_role"])
 
-    # print("\nAs Dictionary:")
-    # print(analysis.model_dump())
-
-    selected_role = route_model(analysis)
-
-    selected_model = MODEL_CONFIG[selected_role]
-
-    print("\nModel Routing:")
-    print("Model Role:", selected_role)
-    print("Selected Model:", selected_model)
-
-    llm = get_model(selected_model)
-    print("\nSelected model loaded successfully.")
-
-    response = llm.invoke(
-    task["query"]
-    )
+    print("\nSelected Model:")
+    print(result["model_name"])
 
     print("\nModel Response:")
-    print(response.content)
+    print(result["response"])
