@@ -1,12 +1,20 @@
 def route_model(analysis):
+    if isinstance(analysis, dict):
+        needs_vision = analysis.get("needs_vision")
+        task_type = analysis.get("task_type")
+        complexity = analysis.get("complexity")
+    else:
+        needs_vision = analysis.needs_vision
+        task_type = analysis.task_type
+        complexity = analysis.complexity
 
-    if analysis.needs_vision:
+    if needs_vision:
         return "vision_model"
 
-    if analysis.task_type == "coding":
+    if task_type == "coding":
         return "coding_model"
 
-    if analysis.complexity == "high":
+    if complexity == "high":
         return "reasoning_model"
 
     return "general_model"

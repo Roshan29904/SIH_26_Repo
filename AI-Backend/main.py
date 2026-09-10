@@ -5,29 +5,27 @@ def get_user_query():
 
     query = input("Enter your task: ")
 
+    file_path = input(
+        "Enter file path (press Enter if no file): "
+    )
+
     return {
-        "query": query.strip()
+        "query": query.strip(),
+        "file_path": file_path.strip()
     }
 
 
 if __name__ == "__main__":
-
-    task = get_user_query()
-
-    print("\nReceived Task:")
-    print(task["query"])
-
     graph = build_graph()
-
-    result = graph.invoke({
-        "query": task["query"]
-    })
-
-    print("\nModel Role:")
-    print(result["model_role"])
-
-    print("\nSelected Model:")
-    print(result["model_name"])
-
-    print("\nModel Response:")
-    print(result["response"])
+    config = {"configurable": {"thread_id": "demo-user-1"}}
+    while True:
+        task = get_user_query()
+        if not task["query"] or task["query"].lower() in ("exit", "quit"):
+            break
+        result = graph.invoke({
+            "query": task["query"],
+            "file_path": task["file_path"],
+            "verification_attempts": 0,
+            "messages": [{"role": "user", "content": task["query"]}]
+        }, config=config)
+        print("\nModel Response:\n", result["response"])
