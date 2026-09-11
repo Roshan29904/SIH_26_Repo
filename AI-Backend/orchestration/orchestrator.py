@@ -118,6 +118,8 @@ def verification_node(state: AgentState):
         state["response"]
     )
 
+    print(state["created_files"])
+
     attempts = state.get("verification_attempts", 0) + 1
 
     return {
