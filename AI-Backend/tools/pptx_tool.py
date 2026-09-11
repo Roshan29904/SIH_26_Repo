@@ -34,7 +34,7 @@ def create_pptx(title: str, content: str, output_path: str) -> str:
 
         presentation.save(path)
 
-        return f"PowerPoint created successfully at: {path}"
+        return f"DOCUMENT_CREATED:{path}"
 
     except Exception as e:
         return f"Unable to create PowerPoint: {e}"

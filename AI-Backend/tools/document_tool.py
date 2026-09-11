@@ -25,7 +25,7 @@ def create_docx(title: str, content: str, output_path: str) -> str:
 
         document.save(path)
 
-        return f"DOCX created successfully at: {path}"
+        return f"DOCUMENT_CREATED:{path}"
 
     except Exception as e:
         return f"Unable to create DOCX: {e}"

@@ -16,16 +16,16 @@ def get_user_query():
 
 
 if __name__ == "__main__":
-    graph = build_graph()
-    config = {"configurable": {"thread_id": "demo-user-1"}}
+    workflow = build_graph()
+    config = {"configurable": {"thread_id": "demo-user-4"}}
     while True:
         task = get_user_query()
         if not task["query"] or task["query"].lower() in ("exit", "quit"):
             break
-        result = graph.invoke({
+        
+        result = workflow.invoke({
             "query": task["query"],
             "file_path": task["file_path"],
-            "verification_attempts": 0,
-            "messages": [{"role": "user", "content": task["query"]}]
+            "verification_attempts": 0
         }, config=config)
         print("\nModel Response:\n", result["response"])

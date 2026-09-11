@@ -5,7 +5,7 @@ from tools.document_tool import create_docx
 from tools.excel_tool import create_excel
 from tools.pptx_tool import create_pptx
 from tools.pdf_tool import create_pdf
-from tools.image_tool import analyze_image
+# from tools.image_tool import analyze_image
 from tools.rag_tool import search_knowledge_base
 from tools.index_tool import index_document
 
@@ -19,6 +19,5 @@ TOOLS = [
     create_docx,
     create_excel,
     create_pptx,
-    create_pdf,
-    analyze_image
+    create_pdf
 ]

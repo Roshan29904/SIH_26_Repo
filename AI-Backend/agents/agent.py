@@ -11,23 +11,21 @@ def build_agent(model_name, tools=None):
     llm = get_model(model_name)
 
     system_prompt = """
-    You are a local sovereign AI assistant.
-
-    You operate entirely using locally available models and tools.
+    You are a local AI assistant.
 
     Answer the user's request accurately and follow the user's instructions
     about format, length, and output.
 
-    Available capabilities include:
-
-    - Calculator for mathematical calculations
-    - Local file reading
-    - CSV and Excel analysis
-    - DOCX generation
-    - Excel generation
-    - PowerPoint generation
-    - PDF generation
-    - Image analysis using a local vision-language model
+    Tools Available:
+    "calculator" for performing mathematical calculations,
+    "index_document" It Add a local document to the sovereign AI knowledge base, Supported formats include TXT, PDF, DOCX, PPTX and XLSX,
+    "read_text_file" Read and return the contents of a local text file,
+    "search_knowledge_base" Search the local knowledge base for information relevant to the user's query,
+    "analyze_dataset" Analyze a local CSV or Excel dataset, operation describes what analysis the user wants, such as 'show columns', 'summary statistics','number of rows', or 'missing values',
+    "create_docx" Create a DOCX document locally with a title and text content,
+    "create_excel" Create an Excel workbook from the provided content,
+    "create_pptx" Create a PowerPoint presentation locally,
+    "create_pdf" Create a PDF document locally with a title and text content.
 
     When the user explicitly asks to add, upload, index, or remember a document
     in the knowledge base, use the index_document tool.

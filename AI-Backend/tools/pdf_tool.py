@@ -43,7 +43,7 @@ def create_pdf(title: str, content: str, output_path: str) -> str:
 
         document.build(elements)
 
-        return f"PDF created successfully at: {path}"
+        return f"DOCUMENT_CREATED:{path}"
 
     except Exception as e:
         return f"Unable to create PDF: {e}"

@@ -1,5 +1,6 @@
 from typing import TypedDict
 
+from langchain_core.tools import tool
 from query_analysis.query_analyzer import QueryAnalysis, analyze_query
 from model_routing.model_router import route_model
 from model_routing.model_config import MODEL_CONFIG
@@ -14,7 +15,7 @@ from langgraph.checkpoint.sqlite import SqliteSaver
 
 from typing import Annotated
 from langgraph.graph.message import add_messages
-from langchain_core.messages import BaseMessage
+from langchain_core.messages import BaseMessage, ToolMessage
 
 from langgraph.graph import StateGraph
 
@@ -31,6 +32,7 @@ class AgentState(TypedDict):
     verification_reason: str
     verification_attempts: int
     messages: Annotated[list[BaseMessage], add_messages]
+    created_files: list[str]
 
 
 def analysis_node(state: AgentState):
@@ -60,25 +62,32 @@ def model_node(state: AgentState):
     query = state["query"]
 
     if state["file_path"]:
-        query = f"""
-        User task:
-        {state["query"]}
-
-        Attached local file:
-        {state["file_path"]}
-
-        Use the appropriate available tool to work with this file.
-        """
+            query = f"""
+            User task:
+            {state["query"]}
+    
+            Attached local file_path:
+            {state["file_path"]}
+            The file path is provided use this to work with the file.
+            Use the appropriate available tool to work with this file.
+            """
 
     result = agent.invoke({
-        "messages":  state["messages"]
+        "messages": state["messages"] + [{"role": "user", "content": query}]
     })
+
+    created_files = []
+    for msg in result["messages"]:
+        if isinstance(msg, ToolMessage) and isinstance(msg.content, str):
+            if msg.content.startswith("DOCUMENT_CREATED:"):
+                created_files.append(msg.content.split(":", 1)[1])
 
     response = result["messages"][-1].content
 
     return {
         "messages": [result["messages"][-1]],
-        "response": response
+        "response": response,
+        "created_files": created_files
     }
 
 def vision_node(state: AgentState):
@@ -117,15 +126,6 @@ def verification_node(state: AgentState):
         "verification_attempts": attempts
     }
 
-def verification_router(state: AgentState):
-
-    if state["verified"]:
-        return "finish"
-
-    if state["verification_attempts"] >= 2:
-        return "finish"
-
-    return "regenerate"
 
 def regeneration_node(state: AgentState):
 
@@ -196,6 +196,19 @@ def build_graph():
     graph.add_edge("generate", "verify")
     graph.add_edge("vision", "verify")
     graph.add_edge("regenerate", "verify")
+
+    def verification_router(state: AgentState):
+
+        if state["verified"]:
+            return "finish"
+
+        if state["verification_attempts"] >= 2:
+            return "finish"
+
+        if state["model_role"] == "vision_model":   # vision responses aren't regenerated
+            return "finish"
+
+        return "regenerate"
 
     graph.add_conditional_edges(
         "verify",

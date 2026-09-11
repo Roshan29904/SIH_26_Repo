@@ -42,7 +42,7 @@ def create_excel(title: str, content: str, output_path: str) -> str:
 
         workbook.save(path)
 
-        return f"Excel file created successfully at: {path}"
+        return f"DOCUMENT_CREATED:{path}"
 
     except Exception as e:
         return f"Unable to create Excel file: {e}"
