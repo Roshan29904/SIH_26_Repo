@@ -9,13 +9,12 @@ import { FcGoogle } from "react-icons/fc";
 
 export default function Signup() {
   const navigate = useNavigate();
-  const { setPendingEmail } = useAuthFlow();
+  const { startVerification } = useAuthFlow();
   const { setSignupUser } = useUser();
   const [form, setForm] = useState({
     username: "",
     email: "",
     password: "",
-    phone: "",
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -32,8 +31,8 @@ export default function Signup() {
       await signup(form);
       // Backend is expected to send the OTP to the user's email
       
-      setPendingEmail(form.email);
-      setSignupUser(form); // { username, email, phone } 
+      setSignupUser(form);
+      startVerification(form.email, "signup"); 
       navigate("/verify-otp");
     } catch (err) {
       setError(err.message);
@@ -67,13 +66,6 @@ export default function Signup() {
           type="password"
           name="password"
           value={form.password}
-          onChange={handleChange}
-        />
-        <FormField
-          label="Ph. Number"
-          type="tel"
-          name="phone"
-          value={form.phone}
           onChange={handleChange}
         />
 

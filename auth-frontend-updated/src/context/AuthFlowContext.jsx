@@ -4,9 +4,27 @@ const AuthFlowContext = createContext(null);
 
 export function AuthFlowProvider({ children }) {
   const [pendingEmail, setPendingEmail] = useState(null);
+  const [verificationType, setVerificationType] = useState(null); // "signup" | "login"
+
+  function startVerification(email, type) {
+    setPendingEmail(email);
+    setVerificationType(type);
+  }
+
+  function clearVerification() {
+    setPendingEmail(null);
+    setVerificationType(null);
+  }
 
   return (
-    <AuthFlowContext.Provider value={{ pendingEmail, setPendingEmail }}>
+    <AuthFlowContext.Provider
+      value={{
+        pendingEmail,
+        verificationType,
+        startVerification,
+        clearVerification,
+      }}
+    >
       {children}
     </AuthFlowContext.Provider>
   );

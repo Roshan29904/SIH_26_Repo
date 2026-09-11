@@ -3,12 +3,12 @@ import { Link, useNavigate } from "react-router-dom";
 import AuthCard from "../components/AuthCard";
 import FormField from "../components/FormField";
 import { login } from "../services/api";
-import { useUser } from "../context/UserContext";
+import { useAuthFlow } from "../context/AuthFlowContext";
 import { FcGoogle } from "react-icons/fc";
 
 export default function Login() {
   const navigate = useNavigate();
-  const { setLoginUser } = useUser();
+  const { startVerification } = useAuthFlow();
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -21,14 +21,11 @@ export default function Login() {
     e.preventDefault();
     setError("");
     setLoading(true);
-    try {
-      const data = await login(form);
-      // Adjust to whatever the backend actually returns.
-      
 
-      if (data?.token) localStorage.setItem("authToken", data.token);
-      setLoginUser(data?.user); // username returned form backend
-      navigate("/chat");
+    try {
+      await login(form);
+      startVerification(form.email, "login");
+      navigate("/verify-otp");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -37,7 +34,7 @@ export default function Login() {
   }
 
   function handleGoogleLogin() {
-    console.log("TODO: Google login");       //NEEDS GOOGLE AUTHENTICATION
+    console.log("Google login is not provided by the current backend.");
   }
 
   return (
@@ -65,14 +62,14 @@ export default function Login() {
         <div className="auth-form__divider">
           <span>Login with</span>
           <button type="button" className="google-btn" onClick={handleGoogleLogin}>
-            <GoogleIcon /> Google
+            <FcGoogle size={16} /> Google
           </button>
         </div>
 
         {error && <p className="auth-form__error">{error}</p>}
 
         <button type="submit" className="primary-btn" disabled={loading}>
-          {loading ? "Logging in..." : "Login"}
+          {loading ? "Checking..." : "Login"}
         </button>
 
         <p className="auth-form__footer">
@@ -82,7 +79,3 @@ export default function Login() {
     </AuthCard>
   );
 }
-function GoogleIcon(){
-  return <FcGoogle size={16} />
-}
-

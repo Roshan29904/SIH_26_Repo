@@ -1,14 +1,12 @@
 import { Navigate } from "react-router-dom";
-
-
-
- // NEED TO CHANGE WHEN REAL VERIFICATION HAPPEN USING THE BACKEND 
-
+import { getStoredAccessToken } from "../services/api";
 
 export default function RequireAuth({ children }) {
-  const token = localStorage.getItem("authToken");
+  const token = getStoredAccessToken();
+
   if (!token) {
     return <Navigate to="/login" replace />;
   }
+
   return children;
 }

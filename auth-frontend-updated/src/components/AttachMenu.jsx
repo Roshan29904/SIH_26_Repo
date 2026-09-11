@@ -10,13 +10,13 @@ const OPTIONS = [
     key: "excel",
     label: "Excel",
     icon: FileSpreadsheet,
-    accept: ".xlsx,.xls,.csv,application/vnd.ms-excel",
+    accept: ".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
   },
   {
     key: "ppt",
     label: "PowerPoint",
     icon: Presentation,
-    accept: ".pptx,.ppt,application/vnd.ms-powerpoint",
+    accept: ".pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation",
   },
 ];
 

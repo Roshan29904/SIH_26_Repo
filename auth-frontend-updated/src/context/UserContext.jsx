@@ -3,23 +3,27 @@ import { createContext, useContext, useState } from "react";
 const UserContext = createContext(null);
 
 export function UserProvider({ children }) {
-  const [user, setUser] = useState(null); // { username, email, phone }
+  const [user, setUser] = useState(null);
 
-  // Called right after Signup succeeds.
-  function setSignupUser({ username, email, phone }) {
-    setUser({ username, email, phone: phone || null });
+  function setSignupUser({ username, email }) {
+    setUser({ username, email, phone: null });
   }
 
-  // data returned form bacckend--username + email
   function setLoginUser(userData) {
     if (!userData) {
       setUser(null);
       return;
     }
+
     setUser({
-      username: userData.username || null,
-      email: userData.email,
-      phone: userData.phone || null,
+      id: userData.id,
+      username: userData.name || userData.username || null,
+      email: userData.email || null,
+      phone: null,
+      emailVerified: userData.emailVerified,
+      enabled: userData.enabled,
+      role: userData.role,
+      createdAt: userData.createdAt,
     });
   }
 

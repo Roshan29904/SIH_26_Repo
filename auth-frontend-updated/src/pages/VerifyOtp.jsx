@@ -1,21 +1,22 @@
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthCard from "../components/AuthCard";
-import { verifyOtp, resendOtp } from "../services/api";
+import { verifySignupOtp, verifyLoginOtp, saveAuthTokens, getCurrentUser } from "../services/api";
 import { useAuthFlow } from "../context/AuthFlowContext";
+import { useUser } from "../context/UserContext";
 
 const OTP_LENGTH = 6;
 
 export default function VerifyOtp() {
   const navigate = useNavigate();
-  const { pendingEmail } = useAuthFlow();
+  const { pendingEmail, verificationType, clearVerification } = useAuthFlow();
+  const { setLoginUser } = useUser();
   const [digits, setDigits] = useState(Array(OTP_LENGTH).fill(""));
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [resendMessage, setResendMessage] = useState("");
   const inputRefs = useRef([]);
 
-  function handleChange(index, e) {    //runs when entering the  otp 
+  function handleChange(index, e) {
     const value = e.target.value;
     const digit = value.replace(/[^0-9]/g, "").slice(-1);
 
@@ -56,25 +57,38 @@ export default function VerifyOtp() {
     inputRefs.current[focusIndex]?.focus();
   }
 
-  async function handleSubmit(e) {          //NEEDS BACKEND VERIFICATION
+  async function handleSubmit(e) {
     e.preventDefault();
     setError("");
 
-    if (!pendingEmail) {
-      navigate("/signup");
+    if (!pendingEmail || !verificationType) {
+      navigate("/login");
       return;
     }
 
     const otp = digits.join("");
-    if (otp.length < OTP_LENGTH) {
+    if (otp.length !== OTP_LENGTH) {
       setError("Enter all 6 digits.");
       return;
     }
 
     setLoading(true);
+
     try {
-      await verifyOtp({ email: pendingEmail, otp });         //sending otp to backend
-      navigate("/login");
+      if (verificationType === "signup") {
+        await verifySignupOtp({ email: pendingEmail, otp });
+        clearVerification();
+        navigate("/login");
+      } else {
+        const auth = await verifyLoginOtp({ email: pendingEmail, otp });
+        saveAuthTokens(auth);
+
+        const user = await getCurrentUser();
+        setLoginUser(user);
+
+        clearVerification();
+        navigate("/chat");
+      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -82,20 +96,15 @@ export default function VerifyOtp() {
     }
   }
 
-  async function handleResend() {
-    if (!pendingEmail) return;
-    setResendMessage("");
-    try {
-      await resendOtp({ email: pendingEmail });
-      setResendMessage("A new OTP has been sent.");
-    } catch (err) {
-      setError(err.message);
-    }
-  }
-
   return (
-    <AuthCard title="Enter the OTP sent to your email">
+    <AuthCard title={verificationType === "login" ? "Verify login OTP" : "Verify your email"}>
       <form onSubmit={handleSubmit} className="auth-form auth-form--otp">
+        <p className="auth-form__hint">
+          {pendingEmail
+            ? `Enter the 6-digit code sent to ${pendingEmail}.`
+            : "Your verification session has expired."}
+        </p>
+
         <div className="otp-boxes">
           {digits.map((digit, index) => (
             <input
@@ -109,19 +118,23 @@ export default function VerifyOtp() {
               onChange={(e) => handleChange(index, e)}
               onKeyDown={(e) => handleKeyDown(index, e)}
               onPaste={handlePaste}
+              autoComplete={index === 0 ? "one-time-code" : "off"}
             />
           ))}
         </div>
 
         {error && <p className="auth-form__error">{error}</p>}
-        {resendMessage && <p className="auth-form__hint">{resendMessage}</p>}
 
         <button type="submit" className="confirm-btn" disabled={loading}>
-          {loading ? "Confirming..." : "Confirm OTP"}
+          {loading ? "Verifying..." : "Confirm OTP"}
         </button>
 
-        <button type="button" className="text-btn" onClick={handleResend}>
-          Resend OTP
+        <button
+          type="button"
+          className="text-btn"
+          onClick={() => navigate(verificationType === "signup" ? "/signup" : "/login")}
+        >
+          Back
         </button>
       </form>
     </AuthCard>

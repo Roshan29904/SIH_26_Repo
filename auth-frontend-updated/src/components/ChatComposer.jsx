@@ -46,7 +46,7 @@ export default function ChatComposer({ onEngage }) {
     if ((!value.trim() && !attachedFile) || sending) return;
    
     const text = attachedFile ? `${value} [attached: ${attachedFile.name}]`.trim() : value;
-    sendMessage(text);
+    sendMessage(text, attachedFile);
     setValue("");
     setAttachedFile(null);
   }

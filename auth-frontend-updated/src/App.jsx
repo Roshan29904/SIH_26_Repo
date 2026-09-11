@@ -11,8 +11,8 @@ import { UserProvider } from "./context/UserContext";
 
 export default function App() {
   return (
-    <UserProvider>      // all information about the user - username , phone ...
-      <AuthFlowProvider>    // helps in keeping the email-detail between signup and otp page 
+    <UserProvider>
+      <AuthFlowProvider>
         <Routes>
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<AuthLayout><Login /></AuthLayout>} />
@@ -21,11 +21,11 @@ export default function App() {
           <Route
             path="/chat"
             element={
-              //<RequireAuth>
-                <ChatProvider>    //chat interface 
+              <RequireAuth>
+                <ChatProvider>
                   <Chat />
                 </ChatProvider>
-              //</RequireAuth>
+              </RequireAuth>
             }
           />
         </Routes>
