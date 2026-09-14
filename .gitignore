@@ -1,0 +1,7 @@
+.env
+__pycache__/
+*.pyc
+.venv/
+venv/
+AI-Backend/sample_files/
+AI-Backend/outputs/
